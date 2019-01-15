@@ -9,11 +9,11 @@ variables:
 
 steps:
 
-- script: |
-    dotnet test ./TableTopInc.API/TableTopInc.API.Test/TableTopInc.API.Test.csproj --configuration $(buildConfiguration) --logger trx
-
-- script: |
-    dotnet publish ./TableTopInc.API/TableTopInc.API.Public/TableTopInc.API.Public.csproj --configuration $(buildConfiguration) --output $BUILD_ARTIFACTSTAGINGDIRECTORY
+- script: dotnet test ./TableTopInc.API/TableTopInc.API.Test/TableTopInc.API.Test.csproj --configuration $(buildConfiguration) --logger trx
+  displayName: dotnet test
+  
+- script: dotnet publish ./TableTopInc.API/TableTopInc.API.Public/TableTopInc.API.Public.csproj --configuration $(buildConfiguration) --output $BUILD_ARTIFACTSTAGINGDIRECTORY
+  displayName: dotnet publish
 
 - task: PublishTestResults@2
   condition: succeededOrFailed()
@@ -22,3 +22,4 @@ steps:
     testResultsFiles: '**/*.trx'
 
 - task: PublishBuildArtifacts@1
+  
