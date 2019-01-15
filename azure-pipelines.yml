@@ -10,10 +10,10 @@ variables:
 steps:
 
 - script: |
-    dotnet test dotnetcore-tests --configuration $(buildConfiguration) --logger trx ./TableTopInc.API/TableTopInc.API.Test/TableTopInc.API.Test.csproj
+    dotnet test ./TableTopInc.API/TableTopInc.API.Test/TableTopInc.API.Test.csproj --configuration $(buildConfiguration) --logger trx
 
 - script: |
-    dotnet publish --configuration $(buildConfiguration) --output $BUILD_ARTIFACTSTAGINGDIRECTORY ./TableTopInc.API/TableTopInc.API.Public/TableTopInc.API.Public.csproj
+    dotnet publish ./TableTopInc.API/TableTopInc.API.Public/TableTopInc.API.Public.csproj --configuration $(buildConfiguration) --output $BUILD_ARTIFACTSTAGINGDIRECTORY
 
 - task: PublishTestResults@2
   condition: succeededOrFailed()
