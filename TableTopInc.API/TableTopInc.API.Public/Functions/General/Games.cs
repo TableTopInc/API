@@ -1,10 +1,12 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
+using TableTopInc.API.Engine.Models.General;
 using TableTopInc.API.Engine.Services.General;
 using TableTopInc.API.Mock.Models;
 using TableTopInc.API.Mock.Services;
@@ -43,13 +45,13 @@ namespace TableTopInc.API.Public.Functions.General
         }
         
         [FunctionName("Games")]
-        public static async Task<IActionResult> RunAsync(
+        public static async Task<IEnumerable<IGameModel>> RunAsync(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "games")]HttpRequest req,
             ILogger log)
         {
             var games = await _gameService.GetAllAsync();
-            
-            return new OkObjectResult(games);
+
+            return games;
         }
     }
 }
