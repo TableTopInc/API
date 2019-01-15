@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\TableTopInc.API.Engine\TableTopInc.API.Engine.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Microsoft.Azure.CosmosDB.Table" Version="2.0.0" />
+      <PackageReference Include="Microsoft.Azure.Storage.Common" Version="9.4.2" />
+    </ItemGroup>
+
+</Project>
