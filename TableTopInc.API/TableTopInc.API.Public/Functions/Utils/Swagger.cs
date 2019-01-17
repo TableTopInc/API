@@ -22,11 +22,11 @@ namespace TableTopInc.API.Public.Functions.Utils
 {
     public class Swagger
     {
-        private const string SwaggerFunctionName = "swagger";
+        private const string SwaggerFunctionName = "Swagger";
 
         [FunctionName(SwaggerFunctionName)]
         public static async Task<HttpResponseMessage> Run(
-            [HttpTrigger(AuthorizationLevel.Function, "get", Route = null)]HttpRequestMessage req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)]HttpRequestMessage req,
             ILogger log)
         {
             var assembly = Assembly.GetExecutingAssembly();
