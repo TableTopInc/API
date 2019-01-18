@@ -1,6 +1,4 @@
-using System;
-using Microsoft.Azure.CosmosDB.Table;
-using TableTopInc.API.Engine.AzureStorage.Azure;
+using Microsoft.WindowsAzure.Storage.Table;
 using TableTopInc.API.Engine.Models.Base;
 
 namespace TableTopInc.API.Engine.AzureStorage.Models.Base
@@ -10,10 +8,10 @@ namespace TableTopInc.API.Engine.AzureStorage.Models.Base
         public const string DefaultPartitionKey = "__shared";
 
         [IgnoreProperty]
-        public Guid Id
+        public string Id
         {
-            get => Guid.Parse(RowKey);
-            set => RowKey = AzureTableService<TableEntity>.ToRowKey(value);
+            get => RowKey;
+            set => RowKey = value;
         }
 
         protected EntityBase()

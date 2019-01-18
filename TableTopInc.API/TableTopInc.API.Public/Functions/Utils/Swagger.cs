@@ -12,11 +12,11 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.CosmosDB.Table;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
 using Microsoft.Extensions.Logging;
+using Microsoft.WindowsAzure.Storage.Table;
 
 namespace TableTopInc.API.Public.Functions.Utils
 {
@@ -26,7 +26,8 @@ namespace TableTopInc.API.Public.Functions.Utils
 
         [FunctionName(SwaggerFunctionName)]
         public static async Task<HttpResponseMessage> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)]HttpRequestMessage req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)]
+            HttpRequestMessage req,
             ILogger log)
         {
             var assembly = Assembly.GetExecutingAssembly();
@@ -94,7 +95,11 @@ namespace TableTopInc.API.Public.Functions.Utils
                         .FirstOrDefault() as HttpTriggerAttribute;
                     if (triggerAttribute != null) break;
                 }
-                if (triggerAttribute == null) continue; // Trigger attribute is required in an Azure function
+                
+                if (triggerAttribute == null)
+                {
+                    continue; // Trigger attribute is required in an Azure function
+                }
 
                 if (!string.IsNullOrWhiteSpace(triggerAttribute.Route))
                 {
@@ -108,7 +113,7 @@ namespace TableTopInc.API.Public.Functions.Utils
                 dynamic path = new ExpandoObject();
 
                 var verbs = triggerAttribute.Methods ?? new[] { "get", "post", "delete", "head", "patch", "put", "options" };
-                foreach (string verb in verbs)
+                foreach (var verb in verbs)
                 {
                     dynamic operation = new ExpandoObject();
                     operation.operationId = ToTitleCase(functionAttr.Name) + ToTitleCase(verb);
@@ -444,19 +449,19 @@ namespace TableTopInc.API.Public.Functions.Utils
             }
         }
 
-        public static string ToTitleCase(string str)
+        private static string ToTitleCase(string str)
         {
             return CultureInfo.CurrentCulture.TextInfo.ToTitleCase(str);
         }
 
-        public static void AddToExpando(ExpandoObject obj, string name, object value)
+        private static void AddToExpando(ExpandoObject obj, string name, object value)
         {
             if (((IDictionary<string, object>)obj).ContainsKey(name))
             {
                 // Fix for functions with same routes but different verbs
                 var existing = (IDictionary<string, object>)((IDictionary<string, object>)obj)[name];
                 var append = (IDictionary<string, object>)value;
-                foreach (KeyValuePair<string, object> keyValuePair in append)
+                foreach (var keyValuePair in append)
                 {
                     existing.Add(keyValuePair);
                 }

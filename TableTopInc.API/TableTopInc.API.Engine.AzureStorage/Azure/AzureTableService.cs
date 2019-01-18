@@ -2,11 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Azure.CosmosDB.Table;
+using Microsoft.WindowsAzure.Storage.Table;
 
 namespace TableTopInc.API.Engine.AzureStorage.Azure
 {
-    internal class AzureTableService<T> where T : TableEntity, new()
+    public class AzureTableService<T> where T : TableEntity, new()
     {
         public const int BatchMaxSize = 100;
         public const int QueryMaxParams = 15;

@@ -1,11 +1,10 @@
-using System;
 using TableTopInc.API.Engine.Models.General;
 
-namespace TableTopInc.API.Mock.Models
+namespace TableTopInc.API.Public.Models
 {
-    public class GameModelMock : IGameModel
+    public class GameDto : IGameModel
     {
-        public Guid Id { get; set; }
+        public string Id { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
         public string CoverUrl { get; set; }

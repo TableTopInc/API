@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.Azure.CosmosDB.Table;
+using Microsoft.WindowsAzure.Storage.Table;
 using TableTopInc.API.Engine.AzureStorage.Azure;
 using TableTopInc.API.Engine.AzureStorage.Models.Base;
 using TableTopInc.API.Engine.Services.Base;

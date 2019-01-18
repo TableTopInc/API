@@ -3,7 +3,7 @@ using TableTopInc.API.Engine.Models.General;
 
 namespace TableTopInc.API.Engine.AzureStorage.Models.General
 {
-    public class GameDesigner : EntityBase, IGameDesignerModel
+    public class GameDesignerTableEntity : EntityBase, IGameDesignerModel
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }
