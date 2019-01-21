@@ -50,8 +50,7 @@ namespace TableTopInc.API.Public.Functions.Utils
 
             return await Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
             {
-                Content = new ObjectContent<object>(doc, new JsonMediaTypeFormatter()),
-
+                Content = new ObjectContent<object>(doc, new JsonMediaTypeFormatter())
             });
         }
 
@@ -221,7 +220,7 @@ namespace TableTopInc.API.Public.Functions.Utils
                             var realType = returnType.GetGenericArguments()[0];
                             if (realType.Namespace == "System")
                             {
-                                dynamic inlineSchema = GetObjectSchemaDefinition(null, returnType);
+                                var inlineSchema = GetObjectSchemaDefinition(null, returnType);
                                 responseDef.schema = inlineSchema;
                             }
                             else
@@ -390,7 +389,7 @@ namespace TableTopInc.API.Public.Functions.Utils
                 setObject = opParam.items;
                 parameterType = parameterType.GetElementType();
             }
-            else if (inputType.IsGenericType)
+            else if (inputType.IsGenericType && !inputType.FullName.Contains("Nullable"))
             {
                 opParam.type = "array";
                 opParam.items = new ExpandoObject();
@@ -400,41 +399,20 @@ namespace TableTopInc.API.Public.Functions.Utils
 
             if (inputType.Namespace == "System" || (inputType.IsGenericType && inputType.GetGenericArguments()[0].Namespace == "System"))
             {
-                switch (Type.GetTypeCode(inputType))
+                setObject.type = null;
+                var type = Type.GetTypeCode(inputType);
+                
+                SetType(type, setObject);
+
+                if (setObject.type == null && inputType.IsGenericType)
                 {
-                    case TypeCode.Int32:
-                        setObject.format = "int32";
-                        setObject.type = "integer";
-                        break;
-                    case TypeCode.Int64:
-                        setObject.format = "int64";
-                        setObject.type = "integer";
-                        break;
-                    case TypeCode.Single:
-                        setObject.format = "float";
-                        setObject.type = "number";
-                        break;
-                    case TypeCode.Double:
-                        setObject.format = "double";
-                        setObject.type = "number";
-                        break;
-                    case TypeCode.String:
-                        setObject.type = "string";
-                        break;
-                    case TypeCode.Byte:
-                        setObject.format = "byte";
-                        setObject.type = "string";
-                        break;
-                    case TypeCode.Boolean:
-                        setObject.type = "boolean";
-                        break;
-                    case TypeCode.DateTime:
-                        setObject.format = "date";
-                        setObject.type = "string";
-                        break;
-                    default:
-                        setObject.type = "string";
-                        break;
+                    type = Type.GetTypeCode(inputType.GetGenericArguments()[0]);
+                    SetType(type, setObject);
+                }
+
+                if (setObject.type == null)
+                {
+                    setObject.type = "string";
                 }
             }
             else if (inputType.IsEnum)
@@ -446,6 +424,43 @@ namespace TableTopInc.API.Public.Functions.Utils
             {
                 AddToExpando(setObject, "$ref", "#/definitions/" + parameterType.Name);
                 AddParameterDefinition((IDictionary<string, object>)definitions, parameterType);
+            }
+        }
+
+        private static void SetType(TypeCode type, dynamic setObject)
+        {
+            switch (type)
+            {
+                case TypeCode.Int32:
+                    setObject.format = "int32";
+                    setObject.type = "integer";
+                    break;
+                case TypeCode.Int64:
+                    setObject.format = "int64";
+                    setObject.type = "integer";
+                    break;
+                case TypeCode.Single:
+                    setObject.format = "float";
+                    setObject.type = "number";
+                    break;
+                case TypeCode.Double:
+                    setObject.format = "double";
+                    setObject.type = "number";
+                    break;
+                case TypeCode.String:
+                    setObject.type = "string";
+                    break;
+                case TypeCode.Byte:
+                    setObject.format = "byte";
+                    setObject.type = "string";
+                    break;
+                case TypeCode.Boolean:
+                    setObject.type = "boolean";
+                    break;
+                case TypeCode.DateTime:
+                    setObject.format = "date";
+                    setObject.type = "string";
+                    break;
             }
         }
 
