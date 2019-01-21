@@ -22,6 +22,8 @@ namespace TableTopInc.API.Public.Functions.Utils
 {
     public class Swagger
     {
+        private static ExpandoObject _cache;
+        
         private const string SwaggerFunctionName = "Swagger";
 
         [FunctionName(SwaggerFunctionName)]
@@ -33,20 +35,30 @@ namespace TableTopInc.API.Public.Functions.Utils
             var assembly = Assembly.GetExecutingAssembly();
 
             dynamic doc = new ExpandoObject();
-            doc.swagger = "2.0";
-            doc.info = new ExpandoObject();
-            doc.info.title = assembly.GetName().Name;
-            doc.info.version = "1.0.0";
-            doc.host = req.RequestUri.Authority;
-            doc.basePath = "/";
-            doc.schemes = new[] { "https" };
-            if (doc.host.Contains("127.0.0.1") || doc.host.Contains("localhost"))
+            if (_cache == null)
             {
-                doc.schemes = new[] { "http" };
+                doc.swagger = "2.0";
+                doc.info = new ExpandoObject();
+                doc.info.title = assembly.GetName().Name;
+                doc.info.version = "1.0.0";
+                doc.host = req.RequestUri.Authority;
+                doc.basePath = "/";
+                doc.schemes = new[] {"https"};
+                if (doc.host.Contains("127.0.0.1") || doc.host.Contains("localhost"))
+                {
+                    doc.schemes = new[] {"http"};
+                }
+
+                doc.definitions = new ExpandoObject();
+                doc.paths = GeneratePaths(assembly, doc);
+                doc.securityDefinitions = GenerateSecurityDefinitions();
+
+                _cache = doc;
             }
-            doc.definitions = new ExpandoObject();
-            doc.paths = GeneratePaths(assembly, doc);
-            doc.securityDefinitions = GenerateSecurityDefinitions();
+            else
+            {
+                doc = _cache;
+            }
 
             return await Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
             {
