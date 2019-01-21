@@ -24,7 +24,7 @@ namespace TableTopInc.API.Public.Functions.General
         public static async Task<IEnumerable<GameDto>> GetAllAsync(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = Prefix)]
             HttpRequest req,
-            [Table(GameService.TableName)]CloudTable gamesTable,
+            [Table(GameService.TableName, Connection = "Storage")]CloudTable gamesTable,
             ILogger log)
         {
             var service = new GameService(gamesTable);
@@ -40,7 +40,7 @@ namespace TableTopInc.API.Public.Functions.General
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = Prefix + "/{gameId}")]
             HttpRequest req,
             string gameId,
-            [Table(GameService.TableName)]CloudTable gamesTable,
+            [Table(GameService.TableName, Connection = "Storage")]CloudTable gamesTable,
             ILogger log)
         {
             if (!Guid.TryParse(gameId, out var id))
@@ -60,7 +60,7 @@ namespace TableTopInc.API.Public.Functions.General
         public static async Task<GameDto> SaveAsync(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = Prefix)]
             [FromBody]GameDto model,
-            [Table(GameService.TableName)]CloudTable gamesTable,
+            [Table(GameService.TableName, Connection = "Storage")]CloudTable gamesTable,
             ILogger log)
         {
             if (string.IsNullOrWhiteSpace(model.Id))
@@ -80,7 +80,7 @@ namespace TableTopInc.API.Public.Functions.General
             [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = Prefix + "/{gameId}")]
             HttpRequest req,
             string gameId,
-            [Table(GameService.TableName)]CloudTable gamesTable,
+            [Table(GameService.TableName, Connection = "Storage")]CloudTable gamesTable,
             ILogger log)
         {
             if (!Guid.TryParse(gameId, out var id))
