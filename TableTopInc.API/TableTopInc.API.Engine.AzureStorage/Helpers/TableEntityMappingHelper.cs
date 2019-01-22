@@ -1,22 +1,27 @@
+using System;
 using AutoMapper;
 using TableTopInc.API.Engine.AzureStorage.Models.General;
+using TableTopInc.API.Engine.Models.Base;
 using TableTopInc.API.Engine.Models.General;
 
 namespace TableTopInc.API.Engine.AzureStorage.Helpers
 {
-    public static class TableEntityMappingHelper
+    internal static class TableEntityMappingHelper
     {
-        static TableEntityMappingHelper()
+        private static readonly Lazy<IMapper> ObjMapper = new Lazy<IMapper>(() =>
         {
-            Mapper.Initialize(config =>
+            var config = new MapperConfiguration(cfg =>
             {
-                config.CreateMap<IGameModel, GameTableEntity>();
+                cfg.CreateMap<IGameModel, GameTableEntity>();
+                cfg.CreateMap<IGameDesignerRoleModel, GameDesignerRoleTableEntity>();
             });
-        }
 
-        public static GameTableEntity ToTableEntity(this IGameModel model)
+            return config.CreateMapper();
+        });
+
+        internal static T ToTableEntity<T>(this IEntityModel model)
         {
-            return Mapper.Map<GameTableEntity>(model);
+            return ObjMapper.Value.Map<T>(model);
         }
     }
 }

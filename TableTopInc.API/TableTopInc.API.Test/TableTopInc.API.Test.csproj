@@ -13,7 +13,12 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\TableTopInc.API.Engine\TableTopInc.API.Engine.csproj" />
       <ProjectReference Include="..\TableTopInc.API.Public\TableTopInc.API.Public.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Mock" />
     </ItemGroup>
 
 </Project>

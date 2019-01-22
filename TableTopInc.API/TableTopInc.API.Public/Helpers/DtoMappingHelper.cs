@@ -1,22 +1,31 @@
+using System;
 using AutoMapper;
 using TableTopInc.API.Engine.Models.General;
 using TableTopInc.API.Public.Models;
 
 namespace TableTopInc.API.Public.Helpers
 {
-    public static class DtoMappingHelper
+    internal static class DtoMappingHelper
     {
-        static DtoMappingHelper()
+        private static readonly Lazy<IMapper> ObjMapper = new Lazy<IMapper>(() =>
         {
-            Mapper.Initialize(config =>
+            var config = new MapperConfiguration(cfg =>
             {
-                config.CreateMap<IGameModel, GameDto>();
+                cfg.CreateMap<IGameModel, GameDto>();
+                cfg.CreateMap<IGameDesignerRoleModel, GameDesignerRoleDto>();
             });
-        }
 
-        public static GameDto ToDto(this IGameModel model)
+            return config.CreateMapper();
+        });
+
+        internal static GameDto ToDto(this IGameModel model)
         {
-            return Mapper.Map<GameDto>(model);
+            return ObjMapper.Value.Map<GameDto>(model);
+        }
+        
+        internal static GameDesignerRoleDto ToDto(this IGameDesignerRoleModel model)
+        {
+            return ObjMapper.Value.Map<GameDesignerRoleDto>(model);
         }
     }
 }

@@ -3,10 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.WindowsAzure.Storage.Table;
+using TableTopInc.API.Engine.AzureStorage.Helpers;
+using TableTopInc.API.Engine.AzureStorage.Models.Base;
+using TableTopInc.API.Engine.Models.Base;
+using TableTopInc.API.Engine.Services.Base;
 
-namespace TableTopInc.API.Engine.AzureStorage.Azure
+namespace TableTopInc.API.Engine.AzureStorage.Services.Base
 {
-    public class AzureTableService<T> where T : TableEntity, new()
+    public abstract class AzureTableService<TableModel, EntityModel> : IEntityService<EntityModel>
+        where TableModel : EntityBase, ITableEntity
+        where EntityModel : class, IEntityModel
     {
         public const int BatchMaxSize = 100;
         public const int QueryMaxParams = 15;
@@ -18,7 +24,7 @@ namespace TableTopInc.API.Engine.AzureStorage.Azure
         protected readonly CloudTable Table;
         protected readonly string EntitiesOwnerId;
 
-        internal AzureTableService(CloudTable table, string entitiesOwnerId)
+        internal AzureTableService(CloudTable table, string entitiesOwnerId = EntityBase.DefaultPartitionKey)
         {
             Table = table;
             EntitiesOwnerId = entitiesOwnerId;
@@ -26,48 +32,57 @@ namespace TableTopInc.API.Engine.AzureStorage.Azure
 
         #region public
         
-        public static string ToRowKey(Guid id)
+        public async Task<IEnumerable<EntityModel>> SaveAsync(params EntityModel[] entities)
         {
-            return id.ToString("N");
+            foreach (var entity in entities.Where(x => string.IsNullOrWhiteSpace(x.Id)))
+            {
+                entity.Id = ToRowKey(Guid.NewGuid());
+            }
+            
+            await ExecuteBatchAsync(entities.Select(x => x.ToTableEntity<TableModel>()), TableOperation.InsertOrReplace);
+
+            return entities;
         }
 
-        public async Task<IEnumerable<T>> GetAllAsync()
-        {
-            return await GetByFilterAsync(string.Empty);
-        }
-        
-        public virtual async Task<IEnumerable<T>> GetByIdsAsync(params Guid[] ids)
+        public async Task DeleteByIdsAsync(params string[] ids)
         {
             var keys = ids
                 .Select(x => new KeyValuePair<string, string>(
                     EntitiesOwnerId,
-                    ToRowKey(x)))
-                .ToArray();
-
-            return await GetByKeysAsync(keys);
-        }
-        
-        public virtual async Task DeleteByIdsAsync(params Guid[] ids)
-        {
-            var keys = ids
-                .Select(x => new KeyValuePair<string, string>(
-                    EntitiesOwnerId,
-                    ToRowKey(x)))
+                    x))
                 .ToArray();
 
             await DeleteByKeysAsync(keys);
         }
-        
-        public async Task SaveAsync(params T[] entities)
+
+        public async Task<IEnumerable<EntityModel>> GetAllAsync()
         {
-            await ExecuteBatchAsync(entities, TableOperation.InsertOrReplace);
+            return (await GetByFilterAsync(string.Empty))
+                .Cast<EntityModel>();
         }
-        
+
+        public async Task<IEnumerable<EntityModel>> GetByIdsAsync(params string[] ids)
+        {
+            var keys = ids
+                .Select(x => new KeyValuePair<string, string>(
+                    EntitiesOwnerId,
+                    x))
+                .ToArray();
+
+            return (await GetByKeysAsync(keys))
+                .Cast<EntityModel>();
+        }
+
         #endregion
         
         #region protected
         
-        protected async Task ExecuteBatchAsync(IEnumerable<T> entities, Func<T, TableOperation> func)
+        protected static string ToRowKey(Guid id)
+        {
+            return id.ToString("N");
+        }
+        
+        protected async Task ExecuteBatchAsync(IEnumerable<TableModel> entities, Func<TableModel, TableOperation> func)
         {
             var groups = entities
                 .GroupBy(x => x.PartitionKey, (key, items) => items.ToList());
@@ -97,12 +112,12 @@ namespace TableTopInc.API.Engine.AzureStorage.Azure
             await ExecuteBatchAsync(entities, TableOperation.Delete);
         }
         
-        protected async Task<IEnumerable<T>> GetByKeysAsync(params KeyValuePair<string, string>[] keys)
+        protected async Task<IEnumerable<TableModel>> GetByKeysAsync(params KeyValuePair<string, string>[] keys)
         {
             var partitions = keys
                 .GroupBy(x => x.Key, (key, values) => values.ToList());
 
-            var tasks = new List<Task<IEnumerable<T>>>();
+            var tasks = new List<Task<IEnumerable<TableModel>>>();
             foreach (var rowKeys in partitions)
             {
                 var chunks = Math.Ceiling((decimal)rowKeys.Count / QueryMaxParamsForSinglePartition);
@@ -134,17 +149,17 @@ namespace TableTopInc.API.Engine.AzureStorage.Azure
             return tasks.SelectMany(x => x.Result);
         }
         
-        protected async Task<IEnumerable<T>> GetByFilterAsync(string filter)
+        protected async Task<IEnumerable<TableModel>> GetByFilterAsync(string filter)
         {
-            var query = new TableQuery<T>().Where(filter);
-            var results = new List<T>();
+            var query = new TableQuery<TableEntity>().Where(filter);
+            var results = new List<TableModel>();
             
             TableContinuationToken token = null;
             do
             {
                 var segment = await Table.ExecuteQuerySegmentedAsync(query, token);
                 token = segment.ContinuationToken;
-                results.AddRange(segment.Results);
+                results.AddRange(segment.Results.Cast<TableModel>());
             }
             while (token != null);
 
@@ -152,5 +167,6 @@ namespace TableTopInc.API.Engine.AzureStorage.Azure
         }
         
         #endregion
+        
     }
 }

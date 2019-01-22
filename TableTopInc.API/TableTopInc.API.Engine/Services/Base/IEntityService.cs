@@ -7,10 +7,10 @@ namespace TableTopInc.API.Engine.Services.Base
 {
     public interface IEntityService<T> where T : IEntityModel
     {
-        Task SaveAsync(params T[] entities);
-        Task DeleteByIdsAsync(params Guid[] ids);
+        Task<IEnumerable<T>> SaveAsync(params T[] entities);
+        Task DeleteByIdsAsync(params string[] ids);
         
         Task<IEnumerable<T>> GetAllAsync();
-        Task<IEnumerable<T>> GetByIdsAsync(params Guid[] ids);
+        Task<IEnumerable<T>> GetByIdsAsync(params string[] ids);
     }
 }

@@ -9,6 +9,6 @@ namespace TableTopInc.API.Engine.Services.General
     public interface IGameService : IEntityService<IGameModel>
     {
         Task<IEnumerable<IGameModel>> GetGamesByTagsAsync(params string[] tags);
-        Task<IEnumerable<IGameModel>> GetGamesByGameDesignersAsync(params Guid[] authors);
+        Task<IEnumerable<IGameModel>> GetGamesByGameDesignersAsync(params string[] authors);
     }
 }
