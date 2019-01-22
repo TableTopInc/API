@@ -6,6 +6,8 @@ namespace TableTopInc.API.Engine.AzureStorage.Services.General
 {
     public class GameDesignerRoleService : EntityServiceBase<GameDesignerRoleTableEntity>
     {
+        public const string TableName = "GameDesignerRoles";
+        
         public GameDesignerRoleService(CloudTable table)
             : base(table)
         {

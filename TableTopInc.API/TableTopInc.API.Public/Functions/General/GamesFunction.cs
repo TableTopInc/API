@@ -18,13 +18,13 @@ namespace TableTopInc.API.Public.Functions.General
 {
     public static class GamesFunction
     {
-        private const string Prefix = "games";
+        private const string Prefix = "Games";
         
-        [FunctionName("Games-GetAll")]
+        [FunctionName(Prefix + "-GetAll")]
         public static async Task<IEnumerable<GameDto>> GetAllAsync(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = Prefix)]
             HttpRequest req,
-            [Table(GameService.TableName, Connection = "Storage")]CloudTable gamesTable,
+            [Table(GameService.TableName, Connection = Const.StorageAccountConnectionName)]CloudTable gamesTable,
             ILogger log)
         {
             var service = new GameService(gamesTable);
@@ -35,32 +35,32 @@ namespace TableTopInc.API.Public.Functions.General
             return games;
         }
         
-        [FunctionName("Games-GetById")]
+        [FunctionName(Prefix + "-GetById")]
         public static async Task<GameDto> GetByIdAsync(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = Prefix + "/{gameId}")]
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = Prefix + "/{id}")]
             HttpRequest req,
-            string gameId,
-            [Table(GameService.TableName, Connection = "Storage")]CloudTable gamesTable,
+            string id,
+            [Table(GameService.TableName, Connection = Const.StorageAccountConnectionName)]CloudTable gamesTable,
             ILogger log)
         {
-            if (!Guid.TryParse(gameId, out var id))
+            if (!Guid.TryParse(id, out var gameId))
             {
-                throw new ArgumentException(nameof(gameId));
+                throw new ArgumentException(nameof(id));
             }
             
             var service = new GameService(gamesTable);
 
-            var game = (await service.GetByIdsAsync(id))
+            var game = (await service.GetByIdsAsync(gameId))
                 .SingleOrDefault();
             
             return game.ToDto();
         }
         
-        [FunctionName("Games-Save")]
+        [FunctionName(Prefix + "-Save")]
         public static async Task<GameDto> SaveAsync(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = Prefix)]
             [FromBody]GameDto model,
-            [Table(GameService.TableName, Connection = "Storage")]CloudTable gamesTable,
+            [Table(GameService.TableName, Connection = Const.StorageAccountConnectionName)]CloudTable gamesTable,
             ILogger log)
         {
             if (string.IsNullOrWhiteSpace(model.Id))
@@ -75,22 +75,22 @@ namespace TableTopInc.API.Public.Functions.General
             return model;
         }
         
-        [FunctionName("Games-DeleteById")]
+        [FunctionName(Prefix + "-DeleteById")]
         public static async Task DeleteByIdAsync(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = Prefix + "/{gameId}")]
+            [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = Prefix + "/{id}")]
             HttpRequest req,
-            string gameId,
-            [Table(GameService.TableName, Connection = "Storage")]CloudTable gamesTable,
+            string id,
+            [Table(GameService.TableName, Connection = Const.StorageAccountConnectionName)]CloudTable gamesTable,
             ILogger log)
         {
-            if (!Guid.TryParse(gameId, out var id))
+            if (!Guid.TryParse(id, out var gameId))
             {
-                throw new ArgumentException(nameof(gameId));
+                throw new ArgumentException(nameof(id));
             }
             
             var service = new GameService(gamesTable);
 
-            await service.DeleteByIdsAsync(id);
+            await service.DeleteByIdsAsync(gameId);
         }
     }
 }

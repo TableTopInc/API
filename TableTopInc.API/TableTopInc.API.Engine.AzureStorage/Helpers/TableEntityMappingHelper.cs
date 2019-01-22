@@ -11,12 +11,18 @@ namespace TableTopInc.API.Engine.AzureStorage.Helpers
             Mapper.Initialize(config =>
             {
                 config.CreateMap<IGameModel, GameTableEntity>();
+                config.CreateMap<IGameDesignerRoleModel, GameDesignerRoleTableEntity>();
             });
         }
 
         public static GameTableEntity ToTableEntity(this IGameModel model)
         {
             return Mapper.Map<GameTableEntity>(model);
+        }
+        
+        public static GameDesignerRoleTableEntity ToTableEntity(this IGameDesignerRoleModel model)
+        {
+            return Mapper.Map<GameDesignerRoleTableEntity>(model);
         }
     }
 }
