@@ -8,9 +8,9 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.WindowsAzure.Storage.Table;
-using TableTopInc.API.Engine.AzureStorage.Azure;
 using TableTopInc.API.Engine.AzureStorage.Models.General;
 using TableTopInc.API.Engine.AzureStorage.Services.General;
+using TableTopInc.API.Engine.Services.General;
 using TableTopInc.API.Public.Helpers;
 using TableTopInc.API.Public.Models;
 
@@ -20,19 +20,21 @@ namespace TableTopInc.API.Public.Functions.General
     {
         private const string Prefix = "Games";
         
+        public static Func<CloudTable, IGameService> ResolveService = table => new GameService(table);
+        
         [FunctionName(Prefix + "-GetAll")]
         public static async Task<IEnumerable<GameDto>> GetAllAsync(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = Prefix)]
             HttpRequest req,
-            [Table(GameService.TableName, Connection = Const.StorageAccountConnectionName)]CloudTable gamesTable,
+            [Table(GameService.TableName, Connection = Const.StorageAccountConnectionName)]CloudTable table,
             ILogger log)
         {
-            var service = new GameService(gamesTable);
+            var service = ResolveService(table);
             
-            var games = (await service.GetAllAsync())
+            var entities = (await service.GetAllAsync())
                 .Select(DtoMappingHelper.ToDto);
 
-            return games;
+            return entities;
         }
         
         [FunctionName(Prefix + "-GetById")]
@@ -40,39 +42,30 @@ namespace TableTopInc.API.Public.Functions.General
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = Prefix + "/{id}")]
             HttpRequest req,
             string id,
-            [Table(GameService.TableName, Connection = Const.StorageAccountConnectionName)]CloudTable gamesTable,
+            [Table(GameService.TableName, Connection = Const.StorageAccountConnectionName)]CloudTable table,
             ILogger log)
         {
-            if (!Guid.TryParse(id, out var gameId))
-            {
-                throw new ArgumentException(nameof(id));
-            }
-            
-            var service = new GameService(gamesTable);
+            var service = ResolveService(table);
 
-            var game = (await service.GetByIdsAsync(gameId))
+            var entity = (await service.GetByIdsAsync(id))
                 .SingleOrDefault();
             
-            return game.ToDto();
+            return entity.ToDto();
         }
         
         [FunctionName(Prefix + "-Save")]
         public static async Task<GameDto> SaveAsync(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = Prefix)]
             [FromBody]GameDto model,
-            [Table(GameService.TableName, Connection = Const.StorageAccountConnectionName)]CloudTable gamesTable,
+            [Table(GameService.TableName, Connection = Const.StorageAccountConnectionName)]CloudTable table,
             ILogger log)
         {
-            if (string.IsNullOrWhiteSpace(model.Id))
-            {
-                model.Id = AzureTableService<TableEntity>.ToRowKey(Guid.NewGuid());
-            }
-            
-            var service = new GameService(gamesTable);
+            var service = ResolveService(table);
 
-            await service.SaveAsync(GameTableEntity.Create(model));
+            var entity = (await service.SaveAsync(GameTableEntity.Create(model)))
+                .Single();
 
-            return model;
+            return entity.ToDto();
         }
         
         [FunctionName(Prefix + "-DeleteById")]
@@ -80,17 +73,12 @@ namespace TableTopInc.API.Public.Functions.General
             [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = Prefix + "/{id}")]
             HttpRequest req,
             string id,
-            [Table(GameService.TableName, Connection = Const.StorageAccountConnectionName)]CloudTable gamesTable,
+            [Table(GameService.TableName, Connection = Const.StorageAccountConnectionName)]CloudTable table,
             ILogger log)
         {
-            if (!Guid.TryParse(id, out var gameId))
-            {
-                throw new ArgumentException(nameof(id));
-            }
-            
-            var service = new GameService(gamesTable);
+            var service = ResolveService(table);
 
-            await service.DeleteByIdsAsync(gameId);
+            await service.DeleteByIdsAsync(id);
         }
     }
 }

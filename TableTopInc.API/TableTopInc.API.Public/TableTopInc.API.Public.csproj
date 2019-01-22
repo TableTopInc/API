@@ -25,6 +25,5 @@
   <ItemGroup>
     <ProjectReference Include="..\TableTopInc.API.Engine.AzureStorage\TableTopInc.API.Engine.AzureStorage.csproj" />
     <ProjectReference Include="..\TableTopInc.API.Engine\TableTopInc.API.Engine.csproj" />
-    <ProjectReference Include="..\TableTopInc.API.Mock\TableTopInc.API.Mock.csproj" />
   </ItemGroup>
 </Project>

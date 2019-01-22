@@ -15,8 +15,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TableTopInc.API.Engine.Azur
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TableTopInc.API.Test", "TableTopInc.API.Test\TableTopInc.API.Test.csproj", "{ED564784-5862-4DCC-8780-ADF2434C47D5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TableTopInc.API.Mock", "TableTopInc.API.Mock\TableTopInc.API.Mock.csproj", "{84270209-8375-413E-A488-02FEC86273C8}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,9 +37,5 @@ Global
 		{ED564784-5862-4DCC-8780-ADF2434C47D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ED564784-5862-4DCC-8780-ADF2434C47D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ED564784-5862-4DCC-8780-ADF2434C47D5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{84270209-8375-413E-A488-02FEC86273C8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{84270209-8375-413E-A488-02FEC86273C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{84270209-8375-413E-A488-02FEC86273C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{84270209-8375-413E-A488-02FEC86273C8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

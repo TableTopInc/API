@@ -8,7 +8,7 @@ namespace TableTopInc.API.Engine.AzureStorage.Models.General
     {
         public static GameDesignerRoleTableEntity Create(IGameDesignerRoleModel model)
         {
-            return model.ToTableEntity();
+            return model.ToTableEntity<GameDesignerRoleTableEntity>();
         }
         
         public string Title { get; set; }
