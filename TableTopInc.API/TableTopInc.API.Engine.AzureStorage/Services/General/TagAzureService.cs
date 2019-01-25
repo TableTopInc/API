@@ -6,11 +6,9 @@ using TableTopInc.API.Engine.Services.General;
 
 namespace TableTopInc.API.Engine.AzureStorage.Services.General
 {
-    public class GameDesignerRoleService : AzureTableService<GameDesignerRoleTableStorageEntity, IGameDesignerRoleModel>, IGameDesignerRoleService
+    public class TagAzureService : AzureTableStorageServiceBase<TagTableStorageEntity, ITagModel>, ITagService
     {
-        public const string TableName = "GameDesignerRoles";
-        
-        public GameDesignerRoleService(CloudTable table)
+        public TagAzureService(CloudTable table)
             : base(table)
         {
         }

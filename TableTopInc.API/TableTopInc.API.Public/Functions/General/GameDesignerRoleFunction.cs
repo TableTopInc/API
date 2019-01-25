@@ -20,13 +20,13 @@ namespace TableTopInc.API.Public.Functions.General
     {
         private const string Prefix = "GameDesignerRoles";
 
-        public static Func<CloudTable, IGameDesignerRoleService> ResolveService = table => new GameDesignerRoleService(table);
+        public static Func<CloudTable, IGameDesignerRoleService> ResolveService = table => new GameDesignerRoleAzureService(table);
 
         [FunctionName(Prefix + "-GetAll")]
         public static async Task<IEnumerable<GameDesignerRoleDto>> GetAllAsync(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = Prefix)]
             HttpRequest req,
-            [Table(GameDesignerRoleService.TableName, Connection = Const.StorageAccountConnectionName)]CloudTable table,
+            [Table(GameDesignerRoleAzureService.TableName, Connection = Const.StorageAccountConnectionName)]CloudTable table,
             ILogger log)
         {
             var service = ResolveService(table);
@@ -42,7 +42,7 @@ namespace TableTopInc.API.Public.Functions.General
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = Prefix + "/{id}")]
             HttpRequest req,
             string id,
-            [Table(GameDesignerRoleService.TableName, Connection = Const.StorageAccountConnectionName)]CloudTable table,
+            [Table(GameDesignerRoleAzureService.TableName, Connection = Const.StorageAccountConnectionName)]CloudTable table,
             ILogger log)
         {
             var service = ResolveService(table);
@@ -57,7 +57,7 @@ namespace TableTopInc.API.Public.Functions.General
         public static async Task<GameDesignerRoleDto> SaveAsync(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = Prefix)]
             [FromBody]GameDesignerRoleDto model,
-            [Table(GameDesignerRoleService.TableName, Connection = Const.StorageAccountConnectionName)]CloudTable table,
+            [Table(GameDesignerRoleAzureService.TableName, Connection = Const.StorageAccountConnectionName)]CloudTable table,
             ILogger log)
         {
             var service = ResolveService(table);
@@ -73,7 +73,7 @@ namespace TableTopInc.API.Public.Functions.General
             [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = Prefix + "/{id}")]
             HttpRequest req,
             string id,
-            [Table(GameDesignerRoleService.TableName, Connection = Const.StorageAccountConnectionName)]CloudTable table,
+            [Table(GameDesignerRoleAzureService.TableName, Connection = Const.StorageAccountConnectionName)]CloudTable table,
             ILogger log)
         {
             var service = ResolveService(table);

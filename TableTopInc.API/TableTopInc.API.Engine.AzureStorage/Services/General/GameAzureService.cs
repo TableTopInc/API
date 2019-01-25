@@ -9,11 +9,11 @@ using TableTopInc.API.Engine.Services.General;
 
 namespace TableTopInc.API.Engine.AzureStorage.Services.General
 {
-    public class GameService : AzureTableService<GameTableStorageEntity, IGameModel>, IGameService
+    public class GameAzureService : AzureTableStorageServiceBase<GameTableStorageEntity, IGameModel>, IGameService
     {
         public const string TableName = "Games";
         
-        public GameService(CloudTable table)
+        public GameAzureService(CloudTable table)
             : base(table)
         {
         }

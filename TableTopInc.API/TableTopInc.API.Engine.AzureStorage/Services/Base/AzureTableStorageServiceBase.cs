@@ -10,7 +10,7 @@ using TableTopInc.API.Engine.Services.Base;
 
 namespace TableTopInc.API.Engine.AzureStorage.Services.Base
 {
-    public abstract class AzureTableService<StorageModel, EntityModel> : IEntityService<EntityModel>
+    public abstract class AzureTableStorageServiceBase<StorageModel, EntityModel> : IEntityService<EntityModel>
         where StorageModel : TableStorageEntityBase, ITableEntity, new()
         where EntityModel : class, IEntityModel
     {
@@ -24,7 +24,7 @@ namespace TableTopInc.API.Engine.AzureStorage.Services.Base
         protected readonly CloudTable Table;
         protected readonly string EntitiesOwnerId;
 
-        internal AzureTableService(CloudTable table, string entitiesOwnerId = TableStorageEntityBase.DefaultPartitionKey)
+        internal AzureTableStorageServiceBase(CloudTable table, string entitiesOwnerId = TableStorageEntityBase.DefaultPartitionKey)
         {
             Table = table;
             EntitiesOwnerId = entitiesOwnerId;
