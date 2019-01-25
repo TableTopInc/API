@@ -6,7 +6,7 @@ using TableTopInc.API.Engine.Services.General;
 
 namespace TableTopInc.API.Engine.AzureStorage.Services.General
 {
-    public class GameDesignerService : AzureTableService<GameDesignerTableEntity, IGameDesignerModel>, IGameDesignerService
+    public class GameDesignerService : AzureTableService<GameDesignerTableStorageEntity, IGameDesignerModel>, IGameDesignerService
     {
         public GameDesignerService(CloudTable table)
             : base(table)

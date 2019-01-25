@@ -3,7 +3,7 @@ using TableTopInc.API.Engine.Models.My;
 
 namespace TableTopInc.API.Engine.AzureStorage.Models.My
 {
-    public class MyGameModel : MyEntityBase, IMyGameModel
+    public class MyTableStorageGameModel : MyTableStorageEntityBase, IMyGameModel
     {
         public string Title { get; set; }
         

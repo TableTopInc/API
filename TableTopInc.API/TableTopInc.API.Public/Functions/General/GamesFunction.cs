@@ -62,7 +62,7 @@ namespace TableTopInc.API.Public.Functions.General
         {
             var service = ResolveService(table);
 
-            var entity = (await service.SaveAsync(GameTableEntity.Create(model)))
+            var entity = (await service.SaveAsync(GameTableStorageEntity.Create(model)))
                 .Single();
 
             return entity.ToDto();

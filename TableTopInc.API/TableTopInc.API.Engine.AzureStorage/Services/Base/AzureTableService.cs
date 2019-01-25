@@ -10,8 +10,8 @@ using TableTopInc.API.Engine.Services.Base;
 
 namespace TableTopInc.API.Engine.AzureStorage.Services.Base
 {
-    public abstract class AzureTableService<TableModel, EntityModel> : IEntityService<EntityModel>
-        where TableModel : EntityBase, ITableEntity
+    public abstract class AzureTableService<StorageModel, EntityModel> : IEntityService<EntityModel>
+        where StorageModel : TableStorageEntityBase, ITableEntity, new()
         where EntityModel : class, IEntityModel
     {
         public const int BatchMaxSize = 100;
@@ -24,7 +24,7 @@ namespace TableTopInc.API.Engine.AzureStorage.Services.Base
         protected readonly CloudTable Table;
         protected readonly string EntitiesOwnerId;
 
-        internal AzureTableService(CloudTable table, string entitiesOwnerId = EntityBase.DefaultPartitionKey)
+        internal AzureTableService(CloudTable table, string entitiesOwnerId = TableStorageEntityBase.DefaultPartitionKey)
         {
             Table = table;
             EntitiesOwnerId = entitiesOwnerId;
@@ -39,7 +39,7 @@ namespace TableTopInc.API.Engine.AzureStorage.Services.Base
                 entity.Id = ToRowKey(Guid.NewGuid());
             }
             
-            await ExecuteBatchAsync(entities.Select(x => x.ToTableEntity<TableModel>()), TableOperation.InsertOrReplace);
+            await ExecuteBatchAsync(entities.Select(x => x.ToStorageModel<StorageModel>()), TableOperation.InsertOrReplace);
 
             return entities;
         }
@@ -47,9 +47,7 @@ namespace TableTopInc.API.Engine.AzureStorage.Services.Base
         public async Task DeleteByIdsAsync(params string[] ids)
         {
             var keys = ids
-                .Select(x => new KeyValuePair<string, string>(
-                    EntitiesOwnerId,
-                    x))
+                .Select(x => new KeyValuePair<string, string>(EntitiesOwnerId, x))
                 .ToArray();
 
             await DeleteByKeysAsync(keys);
@@ -58,19 +56,17 @@ namespace TableTopInc.API.Engine.AzureStorage.Services.Base
         public async Task<IEnumerable<EntityModel>> GetAllAsync()
         {
             return (await GetByFilterAsync(string.Empty))
-                .Cast<EntityModel>();
+                .Select(x => x.ToEntityModel<EntityModel>());
         }
 
         public async Task<IEnumerable<EntityModel>> GetByIdsAsync(params string[] ids)
         {
             var keys = ids
-                .Select(x => new KeyValuePair<string, string>(
-                    EntitiesOwnerId,
-                    x))
+                .Select(x => new KeyValuePair<string, string>(EntitiesOwnerId, x))
                 .ToArray();
 
             return (await GetByKeysAsync(keys))
-                .Cast<EntityModel>();
+                .Select(x => x.ToEntityModel<EntityModel>());
         }
 
         #endregion
@@ -82,7 +78,7 @@ namespace TableTopInc.API.Engine.AzureStorage.Services.Base
             return id.ToString("N");
         }
         
-        protected async Task ExecuteBatchAsync(IEnumerable<TableModel> entities, Func<TableModel, TableOperation> func)
+        protected async Task ExecuteBatchAsync(IEnumerable<StorageModel> entities, Func<StorageModel, TableOperation> func)
         {
             var groups = entities
                 .GroupBy(x => x.PartitionKey, (key, items) => items.ToList());
@@ -112,12 +108,12 @@ namespace TableTopInc.API.Engine.AzureStorage.Services.Base
             await ExecuteBatchAsync(entities, TableOperation.Delete);
         }
         
-        protected async Task<IEnumerable<TableModel>> GetByKeysAsync(params KeyValuePair<string, string>[] keys)
+        protected async Task<IEnumerable<StorageModel>> GetByKeysAsync(params KeyValuePair<string, string>[] keys)
         {
             var partitions = keys
                 .GroupBy(x => x.Key, (key, values) => values.ToList());
 
-            var tasks = new List<Task<IEnumerable<TableModel>>>();
+            var tasks = new List<Task<IEnumerable<StorageModel>>>();
             foreach (var rowKeys in partitions)
             {
                 var chunks = Math.Ceiling((decimal)rowKeys.Count / QueryMaxParamsForSinglePartition);
@@ -146,20 +142,21 @@ namespace TableTopInc.API.Engine.AzureStorage.Services.Base
 
             await Task.WhenAll(tasks);
 
-            return tasks.SelectMany(x => x.Result);
+            return tasks
+                .SelectMany(x => x.Result);
         }
         
-        protected async Task<IEnumerable<TableModel>> GetByFilterAsync(string filter)
+        protected async Task<IEnumerable<StorageModel>> GetByFilterAsync(string filter)
         {
-            var query = new TableQuery<TableEntity>().Where(filter);
-            var results = new List<TableModel>();
+            var query = new TableQuery<StorageModel>().Where(filter);
+            var results = new List<StorageModel>();
             
             TableContinuationToken token = null;
             do
             {
                 var segment = await Table.ExecuteQuerySegmentedAsync(query, token);
                 token = segment.ContinuationToken;
-                results.AddRange(segment.Results.Cast<TableModel>());
+                results.AddRange(segment.Results);
             }
             while (token != null);
 

@@ -3,7 +3,7 @@ using TableTopInc.API.Engine.Models.Base;
 
 namespace TableTopInc.API.Engine.AzureStorage.Models.Base
 {
-    public abstract class EntityBase : TableEntity, IEntityModel
+    public abstract class TableStorageEntityBase : TableEntity, IEntityModel
     {
         public const string DefaultPartitionKey = "__shared";
         
@@ -14,7 +14,7 @@ namespace TableTopInc.API.Engine.AzureStorage.Models.Base
             set => RowKey = value;
         }
 
-        protected EntityBase()
+        protected TableStorageEntityBase()
         {
             PartitionKey = DefaultPartitionKey;
         }

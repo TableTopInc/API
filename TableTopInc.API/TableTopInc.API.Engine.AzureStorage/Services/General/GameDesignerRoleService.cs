@@ -6,7 +6,7 @@ using TableTopInc.API.Engine.Services.General;
 
 namespace TableTopInc.API.Engine.AzureStorage.Services.General
 {
-    public class GameDesignerRoleService : AzureTableService<GameDesignerRoleTableEntity, IGameDesignerRoleModel>, IGameDesignerRoleService
+    public class GameDesignerRoleService : AzureTableService<GameDesignerRoleTableStorageEntity, IGameDesignerRoleModel>, IGameDesignerRoleService
     {
         public const string TableName = "GameDesignerRoles";
         

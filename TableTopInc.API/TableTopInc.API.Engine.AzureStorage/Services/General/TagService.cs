@@ -6,7 +6,7 @@ using TableTopInc.API.Engine.Services.General;
 
 namespace TableTopInc.API.Engine.AzureStorage.Services.General
 {
-    public class TagService : AzureTableService<TagTableEntity, ITagModel>, ITagService
+    public class TagService : AzureTableService<TagTableStorageEntity, ITagModel>, ITagService
     {
         public TagService(CloudTable table)
             : base(table)

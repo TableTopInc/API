@@ -9,7 +9,7 @@ using TableTopInc.API.Engine.Services.General;
 
 namespace TableTopInc.API.Engine.AzureStorage.Services.General
 {
-    public class GameService : AzureTableService<GameTableEntity, IGameModel>, IGameService
+    public class GameService : AzureTableService<GameTableStorageEntity, IGameModel>, IGameService
     {
         public const string TableName = "Games";
         

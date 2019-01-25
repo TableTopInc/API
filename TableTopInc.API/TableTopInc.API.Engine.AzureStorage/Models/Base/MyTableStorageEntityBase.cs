@@ -3,7 +3,7 @@ using TableTopInc.API.Engine.Models.Base;
 
 namespace TableTopInc.API.Engine.AzureStorage.Models.Base
 {
-    public abstract class MyEntityBase : EntityBase, IMyEntityModel
+    public abstract class MyTableStorageEntityBase : TableStorageEntityBase, IMyEntityModel
     {
         [IgnoreProperty]
         public string OwnerId
@@ -12,7 +12,7 @@ namespace TableTopInc.API.Engine.AzureStorage.Models.Base
             set => PartitionKey = value;
         }
 
-        protected MyEntityBase()
+        protected MyTableStorageEntityBase()
         {
         }
     }

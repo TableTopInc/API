@@ -3,7 +3,7 @@ using TableTopInc.API.Engine.Models.General;
 
 namespace TableTopInc.API.Engine.AzureStorage.Models.General
 {
-    public class TagTableEntity : EntityBase, ITagModel
+    public class TagTableStorageEntity : TableStorageEntityBase, ITagModel
     {
         public string Title { get; set; }
     }

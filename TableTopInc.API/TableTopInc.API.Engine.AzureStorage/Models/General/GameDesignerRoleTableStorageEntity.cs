@@ -4,11 +4,11 @@ using TableTopInc.API.Engine.Models.General;
 
 namespace TableTopInc.API.Engine.AzureStorage.Models.General
 {
-    public class GameDesignerRoleTableEntity : EntityBase, IGameDesignerRoleModel
+    public class GameDesignerRoleTableStorageEntity : TableStorageEntityBase, IGameDesignerRoleModel
     {
-        public static GameDesignerRoleTableEntity Create(IGameDesignerRoleModel model)
+        public static GameDesignerRoleTableStorageEntity Create(IGameDesignerRoleModel model)
         {
-            return model.ToTableEntity<GameDesignerRoleTableEntity>();
+            return model.ToStorageModel<GameDesignerRoleTableStorageEntity>();
         }
         
         public string Title { get; set; }
