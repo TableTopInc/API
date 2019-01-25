@@ -28,7 +28,7 @@ namespace TableTopInc.API.Public.Functions.Utils
 
         [FunctionName(SwaggerFunctionName)]
         public static async Task<HttpResponseMessage> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)]
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = SwaggerFunctionName)]
             HttpRequestMessage req,
             ILogger log)
         {
@@ -277,7 +277,6 @@ namespace TableTopInc.API.Public.Functions.Utils
                 if (parameter.ParameterType == typeof(HttpRequestMessage)) continue;
                 if (parameter.ParameterType == typeof(HttpRequest)) continue;
                 if (parameter.ParameterType == typeof(ExecutionContext)) continue;
-                if (parameter.ParameterType == typeof(TraceWriter)) continue;
                 if (parameter.ParameterType == typeof(ILogger)) continue;
                 if (parameter.ParameterType == typeof(CloudTable)) continue;
 
