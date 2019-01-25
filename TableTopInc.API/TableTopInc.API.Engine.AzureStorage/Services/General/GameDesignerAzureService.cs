@@ -8,6 +8,8 @@ namespace TableTopInc.API.Engine.AzureStorage.Services.General
 {
     public class GameDesignerAzureService : AzureTableStorageServiceBase<GameDesignerTableStorageEntity, IGameDesignerModel>, IGameDesignerService
     {
+        public const string TableName = "GameDesigners";
+        
         public GameDesignerAzureService(CloudTable table)
             : base(table)
         {

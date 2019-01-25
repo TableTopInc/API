@@ -16,6 +16,9 @@ namespace TableTopInc.API.Engine.AzureStorage.Helpers
                 cfg.CreateMap<IGameModel, GameTableStorageEntity>();
                 cfg.CreateMap<GameTableStorageEntity, IGameModel>();
                 
+                cfg.CreateMap<IGameDesignerModel, GameDesignerTableStorageEntity>();
+                cfg.CreateMap<GameDesignerTableStorageEntity, IGameDesignerModel>();
+                
                 cfg.CreateMap<IGameDesignerRoleModel, GameDesignerRoleTableStorageEntity>();
                 cfg.CreateMap<GameDesignerRoleTableStorageEntity, IGameDesignerRoleModel>();
             });

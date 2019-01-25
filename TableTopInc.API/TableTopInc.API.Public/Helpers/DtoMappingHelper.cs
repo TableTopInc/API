@@ -12,6 +12,7 @@ namespace TableTopInc.API.Public.Helpers
             var config = new MapperConfiguration(cfg =>
             {
                 cfg.CreateMap<IGameModel, GameDto>();
+                cfg.CreateMap<IGameDesignerModel, GameDesignerDto>();
                 cfg.CreateMap<IGameDesignerRoleModel, GameDesignerRoleDto>();
             });
 
@@ -21,6 +22,11 @@ namespace TableTopInc.API.Public.Helpers
         internal static GameDto ToDto(this IGameModel model)
         {
             return ObjMapper.Value.Map<GameDto>(model);
+        }
+        
+        internal static GameDesignerDto ToDto(this IGameDesignerModel model)
+        {
+            return ObjMapper.Value.Map<GameDesignerDto>(model);
         }
         
         internal static GameDesignerRoleDto ToDto(this IGameDesignerRoleModel model)
