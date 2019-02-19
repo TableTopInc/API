@@ -1,5 +1,6 @@
 using System;
 using AutoMapper;
+using TableTopInc.API.Engine.Models.Base;
 using TableTopInc.API.Engine.Models.General;
 using TableTopInc.API.Public.Models;
 
@@ -14,24 +15,18 @@ namespace TableTopInc.API.Public.Helpers
                 cfg.CreateMap<IGameModel, GameDto>();
                 cfg.CreateMap<IGameDesignerModel, GameDesignerDto>();
                 cfg.CreateMap<IGameDesignerRoleModel, GameDesignerRoleDto>();
+                cfg.CreateMap<ITagModel, TagDto>();
+                cfg.CreateMap<ITagModel, TagDtoExtended>();
+                cfg.CreateMap<ITagGroupModel, TagGroupDto>();
+                cfg.CreateMap<ITagGroupModel, TagGroupDtoExtended>();
             });
 
             return config.CreateMapper();
         });
 
-        internal static GameDto ToDto(this IGameModel model)
+        internal static T ToDto<T>(this IEntityModel model)
         {
-            return ObjMapper.Value.Map<GameDto>(model);
-        }
-        
-        internal static GameDesignerDto ToDto(this IGameDesignerModel model)
-        {
-            return ObjMapper.Value.Map<GameDesignerDto>(model);
-        }
-        
-        internal static GameDesignerRoleDto ToDto(this IGameDesignerRoleModel model)
-        {
-            return ObjMapper.Value.Map<GameDesignerRoleDto>(model);
+            return ObjMapper.Value.Map<T>(model);
         }
     }
 }

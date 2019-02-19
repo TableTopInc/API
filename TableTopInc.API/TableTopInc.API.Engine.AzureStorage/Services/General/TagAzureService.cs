@@ -8,6 +8,8 @@ namespace TableTopInc.API.Engine.AzureStorage.Services.General
 {
     public class TagAzureService : AzureTableStorageServiceBase<TagTableStorageEntity, ITagModel>, ITagService
     {
+        public const string TableName = "Tags";
+        
         public TagAzureService(CloudTable table)
             : base(table)
         {

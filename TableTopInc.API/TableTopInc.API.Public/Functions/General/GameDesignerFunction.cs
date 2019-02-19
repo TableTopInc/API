@@ -32,7 +32,7 @@ namespace TableTopInc.API.Public.Functions.General
             var service = ResolveService(table);
 
             var entities = (await service.GetAllAsync())
-                .Select(DtoMappingHelper.ToDto);
+                .Select(DtoMappingHelper.ToDto<GameDesignerDto>);
 
             return entities;
         }
@@ -50,7 +50,7 @@ namespace TableTopInc.API.Public.Functions.General
             var entity = (await service.GetByIdsAsync(id))
                 .SingleOrDefault();
             
-            return entity.ToDto();
+            return entity.ToDto<GameDesignerDto>();
         }
         
         [FunctionName(Prefix + "-Save")]
@@ -65,7 +65,7 @@ namespace TableTopInc.API.Public.Functions.General
             var entity = (await service.SaveAsync(GameDesignerTableStorageEntity.Create(model)))
                 .Single();
 
-            return entity.ToDto();
+            return entity.ToDto<GameDesignerDto>();
         }
         
         [FunctionName(Prefix + "-DeleteById")]

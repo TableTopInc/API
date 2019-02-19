@@ -5,5 +5,7 @@ namespace TableTopInc.API.Engine.Models.General
     public interface ITagModel : IEntityModel
     {
         string Title { get; set; }
+
+        string TagGroupId { get; set; }
     }
 }
