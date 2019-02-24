@@ -9,7 +9,7 @@ namespace TableTopInc.API.Test.Public.Functions.General
     public class GamesFunctionTest
     {
         [Fact]
-        public async Task GetAllTest()
+        public async Task GetAllTestAsync()
         {
             // given
             var mock = new GameServiceMock();
@@ -25,12 +25,12 @@ namespace TableTopInc.API.Test.Public.Functions.General
         }
         
         [Fact]
-        public async Task SaveTest()
+        public async Task SaveTestAsync()
         {
             // given
             var mock = new GameServiceMock();
 
-            GameFunction.ResolveService = table => mock;                        
+            GameFunction.ResolveService = table => mock;
             
             // when 1
             var entities = await GameFunction.GetAllAsync(null, null, null);

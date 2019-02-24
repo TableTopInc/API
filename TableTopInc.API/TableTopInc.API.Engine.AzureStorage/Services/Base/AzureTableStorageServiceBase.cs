@@ -119,22 +119,39 @@ namespace TableTopInc.API.Engine.AzureStorage.Services.Base
                 var chunks = Math.Ceiling((decimal)rowKeys.Count / QueryMaxParamsForSinglePartition);
                 for (var i = 0; i < chunks; i++)
                 {
-                    var queryString = TableQuery.GenerateFilterCondition(
-                        PartitionKeyPropertyName,
-                        QueryComparisons.Equal,
-                        rowKeys.First().Key);
-
-                    queryString = rowKeys
+                    var chunkKeys = rowKeys
                         .Skip(QueryMaxParamsForSinglePartition * i)
                         .Take(QueryMaxParamsForSinglePartition)
+                        .ToList();
+
+                    var queryString = TableQuery.GenerateFilterCondition(
+                        RowKeyPropertyName,
+                        QueryComparisons.Equal,
+                        chunkKeys.First().Value);
+                    
+                    queryString = chunkKeys
+                        .Skip(1)
                         .Aggregate(queryString,
                             (currentFilter, newFilter) => TableQuery.CombineFilters(
                                 currentFilter,
-                                TableOperators.And,
+                                TableOperators.Or,
                                 TableQuery.GenerateFilterCondition(
                                     RowKeyPropertyName,
                                     QueryComparisons.Equal,
                                     newFilter.Value)));
+
+                    if (chunkKeys.Count > 1)
+                    {
+                        queryString = $"({queryString})";
+                    }
+
+                    queryString = TableQuery.CombineFilters(
+                        queryString,
+                        TableOperators.And,
+                        TableQuery.GenerateFilterCondition(
+                            PartitionKeyPropertyName,
+                            QueryComparisons.Equal,
+                            rowKeys.First().Key));
                     
                     tasks.Add(GetByFilterAsync(queryString));
                 }
@@ -164,6 +181,5 @@ namespace TableTopInc.API.Engine.AzureStorage.Services.Base
         }
         
         #endregion
-        
     }
 }

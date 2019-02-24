@@ -97,7 +97,9 @@ namespace TableTopInc.API.Public.Functions.General
         {
             var tagGroupService = TagGroupService(tagGroupTable);
 
-            var tagGroup = await tagGroupService.GetByIdsAsync(model.TagGroupId);
+            var tagGroup = (await tagGroupService.GetByIdsAsync(model.TagGroupId))
+                .SingleOrDefault();
+            
             if (tagGroup == null)
             {
                 throw new ArgumentException();

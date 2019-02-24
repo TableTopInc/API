@@ -77,8 +77,7 @@ namespace TableTopInc.API.Public.Functions.General
 
                 var tagGroup = entity.ToDto<TagGroupDtoExtended>();
 
-                tagGroup.Tags = (await tagService.GetAllAsync())
-                    .Where(x => x.TagGroupId == tagGroup.Id)
+                tagGroup.Tags = (await tagService.GetByTagGroupIdAsync(id))
                     .Select(DtoMappingHelper.ToDto<TagDto>)
                     .ToList();
 
@@ -115,8 +114,7 @@ namespace TableTopInc.API.Public.Functions.General
             var tagService = TagService(tagTable);
             var tagGroupService = TagGroupService(tagGroupTable);
 
-            var tags = (await tagService.GetAllAsync())
-                .Where(x => x.TagGroupId == id)
+            var tags = (await tagService.GetByTagGroupIdAsync(id))
                 .Select(x => x.Id)
                 .ToArray();
 

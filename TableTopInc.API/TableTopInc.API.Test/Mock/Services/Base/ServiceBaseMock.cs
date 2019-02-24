@@ -9,7 +9,7 @@ namespace TableTopInc.API.Test.Mock.Services.Base
 {
     public abstract class ServiceBaseMock<T> : IEntityService<T> where T : IEntityModel
     {
-        private List<T> _storage = new List<T>();
+        protected List<T> _storage = new List<T>();
         
         public async Task<IEnumerable<T>> SaveAsync(params T[] entities)
         {
